@@ -10,21 +10,31 @@ class NavbarScreen extends StatelessWidget {
     return BlocBuilder<NavbarCubit, NavbarState>(
       builder: (context, state) {
         var navbarCubit = NavbarCubit.get(context);
-        return SafeArea(
-          child: Scaffold(
-            body: navbarCubit.screens[navbarCubit.currentIndex],
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: navbarCubit.currentIndex,
-              onTap: (index) {
-                navbarCubit.changeIndex(index);
-              },
-              items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-              ],
+        return PopScope(
+          canPop: false,
+          child: SafeArea(
+            child: Scaffold(
+              body: PageView(
+                controller: navbarCubit.pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: navbarCubit.screens,
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: navbarCubit.currentIndex,
+                onTap: (index) {
+                  navbarCubit.changeIndex(index);
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person),
+                    label: 'Profile',
+                  ),
+                ],
+              ),
             ),
           ),
         );

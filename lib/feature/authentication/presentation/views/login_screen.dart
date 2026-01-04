@@ -16,85 +16,88 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var theme = Theme.of(context);
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        var authCubit = AuthCubit.get(context);
-        return SafeArea(
-          child: Scaffold(
-            body: Form(
-              key: authCubit.formKey,
-              child:
-                  ListView(
-                    children: [
-                      Center(
-                        child: Image.asset(
-                          AssetsStrings.appLogo,
-                          width: size.width * 0.5,
-                          height: size.height * 0.2,
+    return BlocProvider(
+      create: (context) => AuthCubit(),
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          var authCubit = AuthCubit.get(context);
+          return SafeArea(
+            child: Scaffold(
+              body: Form(
+                key: authCubit.formKey,
+                child:
+                    ListView(
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            AssetsStrings.appLogo,
+                            width: size.width * 0.5,
+                            height: size.height * 0.2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 40),
-                      const Text('Welcome to Login Screen'),
-                      const SizedBox(height: 40),
-                      CustomTextFormField(
-                        controller: authCubit.emailController,
-                        prefixIcon: Icon(
-                          Icons.person,
-                          color: AppColors.iconPrimary,
-                        ),
-                        hintText: 'Email',
-                        validator: (value) =>
-                            InputValidator.validateEmail(value!),
-                      ),
-                      const SizedBox(height: 15),
-                      CustomTextFormField(
-                        controller: authCubit.passwordController,
-                        prefixIcon: Icon(
-                          Icons.password,
-                          color: AppColors.iconPrimary,
-                        ),
-                        hintText: 'Password',
-                        obscureText: !authCubit.isPasswordVisible,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            authCubit.isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                        const SizedBox(height: 40),
+                        const Text('Welcome to Login Screen'),
+                        const SizedBox(height: 40),
+                        CustomTextFormField(
+                          controller: authCubit.emailController,
+                          prefixIcon: Icon(
+                            Icons.person,
                             color: AppColors.iconPrimary,
                           ),
-                          onPressed: () {
-                            authCubit.togglePasswordVisibility();
+                          hintText: 'Email',
+                          validator: (value) =>
+                              InputValidator.validateEmail(value!),
+                        ),
+                        const SizedBox(height: 15),
+                        CustomTextFormField(
+                          controller: authCubit.passwordController,
+                          prefixIcon: Icon(
+                            Icons.password,
+                            color: AppColors.iconPrimary,
+                          ),
+                          hintText: 'Password',
+                          obscureText: !authCubit.isPasswordVisible,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              authCubit.isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: AppColors.iconPrimary,
+                            ),
+                            onPressed: () {
+                              authCubit.togglePasswordVisibility();
+                            },
+                          ),
+                          validator: (value) =>
+                              InputValidator.validateNotEmpty(value!),
+                        ),
+                        const SizedBox(height: 30),
+                        MainAppButton(
+                          bgColor: AppColors.primary500,
+                          height: 55,
+                          child: Text(
+                            'Login',
+                            style: theme.textTheme.bodyMedium!.copyWith(
+                              color: AppColors.natural100,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onTap: () {
+                            authCubit.loginUser();
                           },
                         ),
-                        validator: (value) =>
-                            InputValidator.validateNotEmpty(value!),
-                      ),
-                      const SizedBox(height: 30),
-                      MainAppButton(
-                        bgColor: AppColors.primary500,
-                        height: 55,
-                        child: Text(
-                          'Login',
-                          style: theme.textTheme.bodyMedium!.copyWith(
-                            color: AppColors.natural100,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onTap: () {
-                          authCubit.loginUser();
-                        },
-                      ),
-                    ],
-                  ).setHorizontalAndVerticalPadding(
-                    context,
-                    15,
-                    20,
-                    enableMediaQuery: false,
-                  ),
+                      ],
+                    ).setHorizontalAndVerticalPadding(
+                      context,
+                      15,
+                      20,
+                      enableMediaQuery: false,
+                    ),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

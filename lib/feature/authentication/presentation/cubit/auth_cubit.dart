@@ -1,4 +1,6 @@
 import 'package:bexel/Core/Helper/dependency_injection_helper.dart';
+import 'package:bexel/Core/Routes/app_navigation.dart';
+import 'package:bexel/Core/Routes/app_routes.dart';
 import 'package:bexel/Core/Themes/app_colors.dart';
 import 'package:bexel/Core/Widget/custom_snack_bar.dart';
 import 'package:equatable/equatable.dart';
@@ -18,8 +20,12 @@ class AuthCubit extends Cubit<AuthState> {
   final DependencyInjectionHelper di = DependencyInjectionHelper();
   final formKey = GlobalKey<FormState>();
   bool isPasswordVisible = false;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController(
+    text: 'support@bexel.io',
+  );
+  TextEditingController passwordController = TextEditingController(
+    text: '123456',
+  );
 
   loginUser() async {
     if (formKey.currentState!.validate()) {
@@ -34,6 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
         });
         if (user.email == emailController.text &&
             user.password == passwordController.text) {
+          AppNavigation.pushNamed(AppRoutes.bottomBar);
           showCustomSnackBar(
             message: 'Login Successful',
             backgroundColor: AppColors.primary500,

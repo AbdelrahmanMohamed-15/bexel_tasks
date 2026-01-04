@@ -1,6 +1,6 @@
 import 'package:bexel/Core/Data/app_database.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-
 import '../../feature/authentication/presentation/cubit/auth_cubit.dart';
 import '../../feature/home/presentation/cubit/home_cubit.dart';
 import '../../feature/navbar/presentation/cubit/navbar_cubit.dart';
@@ -23,7 +23,9 @@ class DependencyInjectionHelper {
   /// Registers all core components like services
   Future<void> _registerCoreDependencies() async {
     final AppDatabase appDatabase = AppDatabase();
+    const FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
     sl.registerFactory(() => appDatabase);
+    sl.registerLazySingleton(() => flutterSecureStorage);
   }
 
   /// Registers any [DATA SOURCE]
