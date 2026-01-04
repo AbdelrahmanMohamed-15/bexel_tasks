@@ -1,0 +1,34 @@
+import 'package:bexel/feature/navbar/presentation/cubit/navbar_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class NavbarScreen extends StatelessWidget {
+  const NavbarScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NavbarCubit, NavbarState>(
+      builder: (context, state) {
+        var navbarCubit = NavbarCubit.get(context);
+        return SafeArea(
+          child: Scaffold(
+            body: navbarCubit.screens[navbarCubit.currentIndex],
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: navbarCubit.currentIndex,
+              onTap: (index) {
+                navbarCubit.changeIndex(index);
+              },
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
