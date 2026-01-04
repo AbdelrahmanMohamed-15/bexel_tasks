@@ -20,6 +20,9 @@ class HomeScreen extends StatelessWidget {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         var homeCubit = HomeCubit.get(context);
+        final showFilters = state is HomeSuccess
+            ? state.showFilters
+            : homeCubit.showFilters;
         return Scaffold(
           appBar: AppBar(
             backgroundColor: AppColors.primary500,
@@ -35,9 +38,7 @@ class HomeScreen extends StatelessWidget {
             actions: [
               IconButton(
                 icon: Icon(
-                  homeCubit.showFilters
-                      ? Icons.filter_list
-                      : Icons.filter_list_outlined,
+                  showFilters ? Icons.filter_list : Icons.filter_list_outlined,
                   color: Colors.white,
                 ),
                 onPressed: () {
@@ -55,7 +56,7 @@ class HomeScreen extends StatelessWidget {
               ),
 
               // Filters Section
-              if (homeCubit.showFilters) FiltersSectionWidget(cubit: homeCubit),
+              if (showFilters) FiltersSectionWidget(cubit: homeCubit),
 
               // Tasks List
               Expanded(

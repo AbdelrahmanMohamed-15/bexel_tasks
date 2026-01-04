@@ -81,7 +81,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void toggleFilters() {
     _showFilters = !_showFilters;
-    emit(HomeSuccess(tasks: _filteredTasks));
+    emit(HomeSuccess(tasks: _filteredTasks, showFilters: _showFilters));
   }
 
   void _applyFilters() {
@@ -130,7 +130,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     });
 
-    emit(HomeSuccess(tasks: _filteredTasks));
+    emit(HomeSuccess(tasks: _filteredTasks, showFilters: _showFilters));
   }
 
   Future<void> deleteTask(Task task) async {

@@ -12,9 +12,13 @@ final class HomeInitial extends HomeState {}
 // Success State
 final class HomeSuccess extends HomeState {
   final List<Task> tasks;
-  const HomeSuccess({required this.tasks});
+  final bool showFilters;
+  const HomeSuccess({
+    required this.tasks,
+    this.showFilters = false,
+  });
   @override
-  List<Object> get props => [tasks];
+  List<Object> get props => [tasks, showFilters];
 }
 
 // Error State
