@@ -1,10 +1,11 @@
-# bexel
+# Bexel
 
-A new Flutter project.
+Flutter Project Task for technical interview
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a task for bexel company 
+which use drift plugin for local data base and show data as a steaming for live updates 
 
 A few resources to See Bexel Task Screen:
 
