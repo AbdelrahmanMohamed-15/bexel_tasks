@@ -1,9 +1,9 @@
 import 'package:bexel/Core/Routes/app_navigation.dart';
-import 'package:bexel/core/Routes/app_routes.dart';
-import 'package:bexel/core/Widget/main_app_button.dart';
+import 'package:bexel/Core/Routes/app_routes.dart';
+import 'package:bexel/Core/Widget/main_app_button.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/Constant/assets_strings.dart';
-import '../../../../core/Themes/app_colors.dart';
+import '../../../../Core/Constant/assets_strings.dart';
+import '../../../../Core/Themes/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -87,6 +87,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 30),
+          MainAppButton(
+            bgColor: AppColors.primary500,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.add, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(
+                  'Add New Task',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              AppNavigation.pushNamed('/addTask');
+            },
+          ),
+          const SizedBox(height: 20),
           MainAppButton(
             bgColor: AppColors.darkRed,
             child: Text(
