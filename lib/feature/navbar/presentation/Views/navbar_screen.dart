@@ -1,3 +1,4 @@
+import 'package:bexel/Core/Themes/app_colors.dart';
 import 'package:bexel/feature/navbar/presentation/cubit/navbar_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,9 @@ class NavbarScreen extends StatelessWidget {
               ),
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: navbarCubit.currentIndex,
+                backgroundColor: AppColors.primary500,
+                selectedItemColor: AppColors.natural100,
+                unselectedItemColor: AppColors.natural500,
                 onTap: (index) {
                   navbarCubit.changeIndex(index);
                 },

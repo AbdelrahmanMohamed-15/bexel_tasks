@@ -22,9 +22,8 @@ class DependencyInjectionHelper {
 
   /// Registers all core components like services
   Future<void> _registerCoreDependencies() async {
-    final AppDatabase appDatabase = AppDatabase();
     const FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
-    sl.registerFactory(() => appDatabase);
+    sl.registerLazySingleton(() => AppDatabase());
     sl.registerLazySingleton(() => flutterSecureStorage);
   }
 

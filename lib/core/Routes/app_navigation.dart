@@ -28,8 +28,10 @@ class AppNavigation {
     );
   }
 
-  static Future<dynamic> pushNamedAndRemoveUntil(String routeName,
-      {RoutePredicate? predicate}) {
+  static Future<dynamic> pushNamedAndRemoveUntil(
+    String routeName, {
+    RoutePredicate? predicate,
+  }) {
     return navigatorKey.currentState!.pushNamedAndRemoveUntil(
       routeName,
       predicate ?? ModalRoute.withName(AppRoutes.splash),
@@ -37,16 +39,16 @@ class AppNavigation {
   }
 
   static Future<dynamic> push(MaterialPageRoute route) {
-    return navigatorKey.currentState!.push(
-      route,
-    );
+    return navigatorKey.currentState!.push(route);
   }
 
   static void popUntil(bool Function(Route<dynamic>) func) =>
       navigatorKey.currentState!.popUntil(func);
 
   static void pop({List? args}) {
-    return navigatorKey.currentState!.pop(args);
+    if (navigatorKey.currentState != null) {
+      navigatorKey.currentState!.pop(args);
+    }
   }
 
   static bool canPop(BuildContext context) {
@@ -54,14 +56,8 @@ class AppNavigation {
   }
 
   static void showSnackBar(String message) {
-    ScaffoldMessenger.of(navigatorKey.currentState!.context).showSnackBar(
-      SnackBar(
-        content: Center(
-          child: Text(
-            message,
-          ),
-        ),
-      ),
-    );
+    ScaffoldMessenger.of(
+      navigatorKey.currentState!.context,
+    ).showSnackBar(SnackBar(content: Center(child: Text(message))));
   }
 }

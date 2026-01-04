@@ -6,6 +6,10 @@ import '../../feature/authentication/presentation/views/login_screen.dart';
 import '../../feature/authentication/presentation/views/splach_screen.dart';
 import '../../feature/authentication/presentation/cubit/auth_cubit.dart';
 import '../../feature/navbar/presentation/cubit/navbar_cubit.dart';
+import '../../feature/home/presentation/views/task_details_screen.dart';
+import '../../feature/home/presentation/views/add_task_screen.dart';
+import '../../feature/home/presentation/cubit/home_cubit.dart';
+import '../../Core/Data/app_database.dart';
 import '../Constant/base_constant.dart';
 import 'app_navigation.dart';
 import 'app_routes.dart';
@@ -33,6 +37,44 @@ class RouteGenerator {
             create: (context) => NavbarCubit(),
             child: const NavbarScreen(),
           ),
+          settings: settings,
+        );
+      case AppRoutes.taskDetails:
+        final task = settings.arguments;
+        if (task == null) {
+          return _errorRoute();
+        }
+        return MaterialPageRoute(
+          builder: (context) {
+            // Try to get HomeCubit from context, if not available create new one
+            HomeCubit? homeCubit;
+            try {
+              homeCubit = BlocProvider.of<HomeCubit>(context);
+            } catch (e) {
+              homeCubit = HomeCubit();
+            }
+            return BlocProvider<HomeCubit>.value(
+              value: homeCubit,
+              child: TaskDetailsScreen(task: task as Task),
+            );
+          },
+          settings: settings,
+        );
+      case AppRoutes.addTask:
+        return MaterialPageRoute(
+          builder: (context) {
+            // Try to get HomeCubit from context, if not available create new one
+            HomeCubit? homeCubit;
+            try {
+              homeCubit = BlocProvider.of<HomeCubit>(context);
+            } catch (e) {
+              homeCubit = HomeCubit();
+            }
+            return BlocProvider<HomeCubit>.value(
+              value: homeCubit,
+              child: const AddTaskScreen(),
+            );
+          },
           settings: settings,
         );
       default:

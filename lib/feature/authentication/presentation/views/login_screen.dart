@@ -4,13 +4,52 @@ import 'package:bexel/Core/Themes/app_colors.dart';
 import 'package:bexel/Core/Widget/custom_text_form_field.dart';
 import 'package:bexel/Core/Widget/main_app_button.dart';
 import 'package:bexel/Feature/authentication/Presentation/cubit/auth_cubit.dart';
+import 'package:bexel/Core/Data/app_database.dart';
+import 'package:bexel/Core/Data/generated_tasks.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:drift/drift.dart' as drift;
 import '../../../../Core/Constant/assets_strings.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    checkTasks();
+    super.initState();
+  }
+
+  checkTasks() async {
+    try {
+      List<Task> tasks = await GetIt.instance<AppDatabase>().getAllTasks();
+      if (tasks.isEmpty) {
+        EasyLoading.show(status: 'Inserting generated tasks...');
+        for (var task in generateTasks()) {
+          await GetIt.instance<AppDatabase>().insertTask(
+            TasksCompanion(
+              title: drift.Value(task.title),
+              description: drift.Value(task.description),
+              isCompleted: drift.Value(task.isCompleted),
+              type: drift.Value(task.type),
+              createdAt: drift.Value(task.createdAt),
+            ),
+          );
+        }
+        EasyLoading.dismiss();
+      }
+    } catch (e) {
+      // Handle error if database is not ready yet
+      debugPrint('Error checking tasks: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
