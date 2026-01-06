@@ -49,14 +49,14 @@ class HomeScreen extends StatelessWidget {
           ),
           body: Column(
             children: [
+              // Filters Section
+              if (showFilters) FiltersSectionWidget(cubit: homeCubit),
+
               // Search Bar
               SearchBarWidget(
                 controller: homeCubit.searchController,
                 onSearch: (query) => homeCubit.searchTasks(query),
               ),
-
-              // Filters Section
-              if (showFilters) FiltersSectionWidget(cubit: homeCubit),
 
               // Tasks List
               Expanded(
@@ -65,17 +65,18 @@ class HomeScreen extends StatelessWidget {
                     : NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
                           if (scrollInfo is ScrollUpdateNotification) {
-                            final maxScroll = scrollInfo.metrics.maxScrollExtent;
+                            final maxScroll =
+                                scrollInfo.metrics.maxScrollExtent;
                             final currentScroll = scrollInfo.metrics.pixels;
-                            
+
                             // Only trigger if we're near the bottom and not already loading
-                            if (state is HomeSuccess && 
-                                state.hasMore && 
+                            if (state is HomeSuccess &&
+                                state.hasMore &&
                                 !state.isLoadingMore &&
                                 maxScroll > 0) {
                               // Load more when user is 200px from bottom
                               final threshold = maxScroll - 200;
-                              
+
                               if (currentScroll >= threshold) {
                                 homeCubit.loadMoreTasks();
                               }
@@ -86,7 +87,8 @@ class HomeScreen extends StatelessWidget {
                         child: ListView.builder(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           itemCount: state is HomeSuccess
-                              ? state.displayedTasks.length + (state.hasMore ? 1 : 0)
+                              ? state.displayedTasks.length +
+                                    (state.hasMore ? 1 : 0)
                               : homeCubit.tasks.length,
                           itemBuilder: (context, index) {
                             if (state is HomeSuccess) {
@@ -99,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 );
                               }
-                              
+
                               var task = state.displayedTasks[index];
                               return GestureDetector(
                                 onTap: () {
@@ -111,7 +113,7 @@ class HomeScreen extends StatelessWidget {
                                 child: TaskCard(task: task),
                               );
                             }
-                            
+
                             // Fallback for other states
                             if (index >= homeCubit.tasks.length) {
                               return const SizedBox.shrink();

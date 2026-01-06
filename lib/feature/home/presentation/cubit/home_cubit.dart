@@ -94,6 +94,16 @@ class HomeCubit extends Cubit<HomeState> {
     _updateDisplayedTasks();
   }
 
+  void resetFilters() {
+    _searchQuery = '';
+    _sortOrder = SortOrder.ascending;
+    _statusFilter = TaskStatusFilter.all;
+    _typeFilter = TaskTypeFilter.all;
+    _currentPage = 1;
+    searchController.clear();
+    _applyFilters();
+  }
+
   void loadMoreTasks() {
     // Check if there are more items to load
     final currentDisplayedCount = _displayedTasks.length;
@@ -123,7 +133,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   bool _isLoadingMore = false;
 
-  void _updateDisplayedTasks() {
+  void _updateDisplayedTasks({bool forceUpdate = false}) {
     if (_filteredTasks.isEmpty) {
       _displayedTasks = [];
     } else {
@@ -131,8 +141,8 @@ class HomeCubit extends Cubit<HomeState> {
         0,
         _filteredTasks.length,
       );
-      // Always update if endIndex is different from current displayed count
-      if (endIndex != _displayedTasks.length) {
+      // Always update if endIndex is different OR if forceUpdate is true (e.g., when filters change)
+      if (endIndex != _displayedTasks.length || forceUpdate) {
         _displayedTasks = _filteredTasks.sublist(0, endIndex);
       }
     }
@@ -198,7 +208,8 @@ class HomeCubit extends Cubit<HomeState> {
       }
     });
 
-    _updateDisplayedTasks();
+    // Force update when filters are applied to ensure UI reflects the new filtered list
+    _updateDisplayedTasks(forceUpdate: true);
   }
 
   Future<void> deleteTask(Task task) async {
