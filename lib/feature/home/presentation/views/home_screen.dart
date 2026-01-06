@@ -60,23 +60,74 @@ class HomeScreen extends StatelessWidget {
 
               // Tasks List
               Expanded(
-                child: homeCubit.tasks.isEmpty
+                child: state is HomeSuccess && state.displayedTasks.isEmpty
                     ? const EmptyTasksWidget()
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        itemCount: homeCubit.tasks.length,
-                        itemBuilder: (context, index) {
-                          var task = homeCubit.tasks[index];
-                          return GestureDetector(
-                            onTap: () {
-                              AppNavigation.pushNamed(
-                                AppRoutes.taskDetails,
-                                arguments: task,
-                              );
-                            },
-                            child: TaskCard(task: task),
-                          );
+                    : NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (scrollInfo is ScrollUpdateNotification) {
+                            final maxScroll = scrollInfo.metrics.maxScrollExtent;
+                            final currentScroll = scrollInfo.metrics.pixels;
+                            
+                            // Only trigger if we're near the bottom and not already loading
+                            if (state is HomeSuccess && 
+                                state.hasMore && 
+                                !state.isLoadingMore &&
+                                maxScroll > 0) {
+                              // Load more when user is 200px from bottom
+                              final threshold = maxScroll - 200;
+                              
+                              if (currentScroll >= threshold) {
+                                homeCubit.loadMoreTasks();
+                              }
+                            }
+                          }
+                          return false;
                         },
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          itemCount: state is HomeSuccess
+                              ? state.displayedTasks.length + (state.hasMore ? 1 : 0)
+                              : homeCubit.tasks.length,
+                          itemBuilder: (context, index) {
+                            if (state is HomeSuccess) {
+                              // Show loading indicator at the bottom
+                              if (index == state.displayedTasks.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                              
+                              var task = state.displayedTasks[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  AppNavigation.pushNamed(
+                                    AppRoutes.taskDetails,
+                                    arguments: task,
+                                  );
+                                },
+                                child: TaskCard(task: task),
+                              );
+                            }
+                            
+                            // Fallback for other states
+                            if (index >= homeCubit.tasks.length) {
+                              return const SizedBox.shrink();
+                            }
+                            var task = homeCubit.tasks[index];
+                            return GestureDetector(
+                              onTap: () {
+                                AppNavigation.pushNamed(
+                                  AppRoutes.taskDetails,
+                                  arguments: task,
+                                );
+                              },
+                              child: TaskCard(task: task),
+                            );
+                          },
+                        ),
                       ),
               ),
             ],

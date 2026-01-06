@@ -29,6 +29,10 @@ class HomeCubit extends Cubit<HomeState> {
 
   List<Task> _allTasks = [];
   List<Task> _filteredTasks = [];
+  List<Task> _displayedTasks = [];
+
+  static const int _pageSize = 15;
+  int _currentPage = 1;
 
   String _searchQuery = '';
   SortOrder _sortOrder = SortOrder.ascending;
@@ -39,12 +43,14 @@ class HomeCubit extends Cubit<HomeState> {
   // Controllers
   final TextEditingController searchController = TextEditingController();
 
-  List<Task> get tasks => _filteredTasks;
+  List<Task> get tasks => _displayedTasks;
+  List<Task> get allFilteredTasks => _filteredTasks;
   String get searchQuery => _searchQuery;
   SortOrder get sortOrder => _sortOrder;
   TaskStatusFilter get statusFilter => _statusFilter;
   TaskTypeFilter get typeFilter => _typeFilter;
   bool get showFilters => _showFilters;
+  bool get hasMore => _displayedTasks.length < _filteredTasks.length;
 
   void _initializeStream() {
     _tasksSubscription?.cancel();
@@ -61,27 +67,89 @@ class HomeCubit extends Cubit<HomeState> {
 
   void searchTasks(String query) {
     _searchQuery = query.toLowerCase();
+    _currentPage = 1; // Reset pagination on search
     _applyFilters();
   }
 
   void setSortOrder(SortOrder order) {
     _sortOrder = order;
+    _currentPage = 1; // Reset pagination on sort change
     _applyFilters();
   }
 
   void setStatusFilter(TaskStatusFilter filter) {
     _statusFilter = filter;
+    _currentPage = 1; // Reset pagination on filter change
     _applyFilters();
   }
 
   void setTypeFilter(TaskTypeFilter filter) {
     _typeFilter = filter;
+    _currentPage = 1; // Reset pagination on filter change
     _applyFilters();
   }
 
   void toggleFilters() {
     _showFilters = !_showFilters;
-    emit(HomeSuccess(tasks: _filteredTasks, showFilters: _showFilters));
+    _updateDisplayedTasks();
+  }
+
+  void loadMoreTasks() {
+    // Check if there are more items to load
+    final currentDisplayedCount = _displayedTasks.length;
+    final totalFilteredCount = _filteredTasks.length;
+
+    if (currentDisplayedCount >= totalFilteredCount || _isLoadingMore) {
+      return;
+    }
+
+    _isLoadingMore = true;
+    emit(
+      HomeSuccess(
+        tasks: _filteredTasks,
+        displayedTasks: _displayedTasks,
+        showFilters: _showFilters,
+        isLoadingMore: true,
+        hasMore: currentDisplayedCount < totalFilteredCount,
+      ),
+    );
+
+    // Simulate loading delay for better UX
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _currentPage++;
+      _updateDisplayedTasks();
+    });
+  }
+
+  bool _isLoadingMore = false;
+
+  void _updateDisplayedTasks() {
+    if (_filteredTasks.isEmpty) {
+      _displayedTasks = [];
+    } else {
+      final endIndex = (_currentPage * _pageSize).clamp(
+        0,
+        _filteredTasks.length,
+      );
+      // Always update if endIndex is different from current displayed count
+      if (endIndex != _displayedTasks.length) {
+        _displayedTasks = _filteredTasks.sublist(0, endIndex);
+      }
+    }
+
+    // Calculate hasMore after updating displayed tasks
+    final hasMoreItems = _displayedTasks.length < _filteredTasks.length;
+    _isLoadingMore = false;
+
+    emit(
+      HomeSuccess(
+        tasks: _filteredTasks,
+        displayedTasks: _displayedTasks,
+        showFilters: _showFilters,
+        isLoadingMore: false,
+        hasMore: hasMoreItems,
+      ),
+    );
   }
 
   void _applyFilters() {
@@ -130,7 +198,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     });
 
-    emit(HomeSuccess(tasks: _filteredTasks, showFilters: _showFilters));
+    _updateDisplayedTasks();
   }
 
   Future<void> deleteTask(Task task) async {
